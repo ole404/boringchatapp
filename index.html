@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <style>
+            #message{
+                display:flex;
+                flex-direction: row;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                
+                
+            }
+            #message input[type='text'] { font-size: 4rem; }
+            #message button{
+                padding-top: 30px;
+                padding-bottom: 30px ;
+                border-radius: 0;
+                background-color: #772325;
+                border-style: none;
+                font-size: 4rem;
+            }
+            #text{
+                width: 100%;
+                font-size: 4rem;
+            }
+            #chat{
+                font-family: sans-serif;
+            }
+            #textfield{
+                width: 100%
+            }
+        </style>
+    </head>
+    <body>
+        <div id="chat">
+        </div>
+        <div id="message">
+            <div id="name">
+                <button id="namebutton">user</button>
+            <form id="msgform" autocomplete="off">
+                </div>
+                    <input id ="text">
+                <button id="send">
+                Send
+                </button>
+            </form>
+        </div>
+        <script src="https://cdn.socket.io/socket.io-2.3.0.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(function () {
+            var socket = io();
+
+            const getname = () => { 
+                var name =  prompt("What is your name?") 
+                $("#namebutton").text(name)
+                return name
+            }
+            
+            var name = getname()
+
+            $("#namebutton").click(()=>{name = getname()})
+
+            $('#msgform').submit(function(){
+              var message = JSON.stringify({
+                  name: name,
+                  text: $('#text').val()
+              })
+            socket.emit('message', message );
+              $('#text').val('');
+              return false;
+            });
+
+            socket.on('message', function(msg){
+                console.log("hi")
+                var message = JSON.parse(msg)
+              $('#chat').append($('<p>').text(`${message.name.toUpperCase()}: ${message.text}`));
+              window.scrollTo(0, document.body.scrollHeight);
+            });
+        });
+        </script>
+    </body>
+</html>
